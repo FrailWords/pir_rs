@@ -1,7 +1,6 @@
-mod pir_service;
 mod pir_grpc;
 
-use tonic::{transport::Server, Request, Response, Status, Streaming};
+use tonic::{transport::Server, Request, Response, Status};
 
 use pir_grpc::pir_grpc_server::{PirGrpc, PirGrpcServer};
 use pir_grpc::{IndexTreeResponse, PirRequest, PirResponse};
