@@ -1,4 +1,5 @@
 use frodo_pir::api::*;
+
 mod utils;
 mod frodo_pir_grpc;
 
@@ -7,30 +8,28 @@ use frodo_pir_grpc::frodo_pir_grpc_server::{FrodoPirGrpc, FrodoPirGrpcServer};
 use frodo_pir_grpc::{PirRequest, PirResponse, ServerParams};
 
 pub struct FrodoPirService {
-    base_params: BaseParams
+    db: Shard,
 }
 
 #[tonic::async_trait]
 impl FrodoPirGrpc for FrodoPirService {
-
     async fn get_params(&self, _: Request<()>) -> Result<Response<ServerParams>, Status> {
         Ok(Response::new(ServerParams {
-            params: bincode::serialize(&self.base_params).unwrap(),
+            params: bincode::serialize(&self.db.get_base_params()).unwrap(),
         }))
     }
 
     async fn get_response(&self, request: Request<PirRequest>) -> Result<Response<PirResponse>, Status> {
-        // let request = request.into_inner();
-
+        let request = request.into_inner().query;
+        let query: Query = bincode::deserialize(&request).unwrap();
+        let server_response = self.db.respond(&query).unwrap();
         // let serialized_response = bincode::serialize(&result).unwrap();
         let pir_response = PirResponse {
-            response: String::from("").into_bytes()
+            response: server_response
         };
         Ok(Response::new(pir_response))
     }
-
 }
-
 
 
 #[tokio::main]
@@ -51,12 +50,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Generates a random database
     let db_elements = utils::generate_db_elements(m, (ele_size + 7) / 8);
     let db = Shard::from_base64_strings(&db_elements, lwe_dim, m, ele_size, plaintext_bits).unwrap();
-    // Parameters used by the server
-    let base_params = db.get_base_params();
 
     let addr = "[::1]:50051".parse()?;
     let pir_service = FrodoPirService {
-        base_params: base_params.clone()
+        db
     };
 
     Server::builder()
