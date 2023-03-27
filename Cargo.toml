@@ -1,0 +1,23 @@
+[package]
+name = "pir"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+prost = "0.11.8"
+tokio = { version = "1.26.0", features = ['rt-multi-thread', 'macros'] }
+tonic = "0.8.3"
+
+
+[[bin]] # Bin to run the FHE gRPC server
+name = "fhe-server"
+path = "src/fhe/server.rs"
+
+[[bin]] # Bin to run the FHE gRPC client
+name = "fhe-client"
+path = "src/fhe/client.rs"
+
+[build-dependencies]
+tonic-build = "0.8.4"
