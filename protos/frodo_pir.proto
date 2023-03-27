@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package frodo_pir_grpc;
+
+service FrodoPirGrpc {
+  rpc GetParams(google.protobuf.Empty) returns (ServerParams) {}
+  rpc GetResponse(PirRequest) returns (PirResponse) {}
+}
+
+message PirRequest{
+  bytes query = 1;
+}
+
+message PirResponse{
+  bytes response = 1;
+}
+
+message ServerParams{
+  bytes params = 1;
+}

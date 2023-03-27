@@ -11,6 +11,9 @@ prost = "0.11.8"
 sunscreen = "0.7.0"
 tokio = { version = "1.26.0", features = ['rt-multi-thread', 'macros'] }
 tonic = "0.8.3"
+frodo-pir = { git = "https://github.com/brave-experiments/frodo-pir.git" }
+rand_core = "0.6.4"
+base64 = "0.21.0"
 
 [[bin]] # Bin to run the FHE gRPC server
 name = "fhe-server"
@@ -19,6 +22,14 @@ path = "src/fhe/server.rs"
 [[bin]] # Bin to run the FHE gRPC client
 name = "fhe-client"
 path = "src/fhe/client.rs"
+
+[[bin]] # Bin to run the Frodo-PIR gRPC server
+name = "frodo-server"
+path = "src/frodo_pir/server.rs"
+
+[[bin]] # Bin to run the FFrodo-PIRHE gRPC client
+name = "frodo-client"
+path = "src/frodo_pir/client.rs"
 
 [build-dependencies]
 tonic-build = "0.8.4"
