@@ -5,13 +5,9 @@ import "google/protobuf/empty.proto";
 package pir_grpc;
 
 service PirGrpc {
-  rpc SaveContext(stream PirContext) returns (google.protobuf.Empty) {}
+  rpc GetParams(google.protobuf.Empty) returns (ServerParams) {}
   rpc GetResponse(PirRequest) returns (PirResponse) {}
   rpc GetIndexTree(google.protobuf.Empty) returns (IndexTreeResponse) {}
-}
-
-message PirContext{
-  bytes ctx = 1;
 }
 
 message IndexTreeResponse{
@@ -19,10 +15,15 @@ message IndexTreeResponse{
 }
 
 message PirRequest{
-  bytes row = 1;
-  bytes col = 2;
+  bytes row_ciphertext = 1;
+  bytes col_ciphertext = 2;
+  bytes public_key = 3;
 }
 
 message PirResponse{
   bytes response = 1;
+}
+
+message ServerParams{
+  bytes params = 1;
 }

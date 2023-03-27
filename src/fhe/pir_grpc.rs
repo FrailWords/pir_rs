@@ -1,11 +1,5 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct PirContext {
-    #[prost(bytes = "vec", tag = "1")]
-    pub ctx: ::prost::alloc::vec::Vec<u8>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct IndexTreeResponse {
     #[prost(string, tag = "1")]
     pub idx_tree: ::prost::alloc::string::String,
@@ -14,15 +8,23 @@ pub struct IndexTreeResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PirRequest {
     #[prost(bytes = "vec", tag = "1")]
-    pub row: ::prost::alloc::vec::Vec<u8>,
+    pub row_ciphertext: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes = "vec", tag = "2")]
-    pub col: ::prost::alloc::vec::Vec<u8>,
+    pub col_ciphertext: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes = "vec", tag = "3")]
+    pub public_key: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PirResponse {
     #[prost(bytes = "vec", tag = "1")]
     pub response: ::prost::alloc::vec::Vec<u8>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ServerParams {
+    #[prost(bytes = "vec", tag = "1")]
+    pub params: ::prost::alloc::vec::Vec<u8>,
 }
 /// Generated client implementations.
 pub mod pir_grpc_client {
@@ -93,10 +95,10 @@ pub mod pir_grpc_client {
             self.inner = self.inner.accept_compressed(encoding);
             self
         }
-        pub async fn save_context(
+        pub async fn get_params(
             &mut self,
-            request: impl tonic::IntoStreamingRequest<Message = super::PirContext>,
-        ) -> Result<tonic::Response<()>, tonic::Status> {
+            request: impl tonic::IntoRequest<()>,
+        ) -> Result<tonic::Response<super::ServerParams>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -108,11 +110,9 @@ pub mod pir_grpc_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/pir_grpc.PirGrpc/SaveContext",
+                "/pir_grpc.PirGrpc/GetParams",
             );
-            self.inner
-                .client_streaming(request.into_streaming_request(), path, codec)
-                .await
+            self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn get_response(
             &mut self,
@@ -161,10 +161,10 @@ pub mod pir_grpc_server {
     /// Generated trait containing gRPC methods that should be implemented for use with PirGrpcServer.
     #[async_trait]
     pub trait PirGrpc: Send + Sync + 'static {
-        async fn save_context(
+        async fn get_params(
             &self,
-            request: tonic::Request<tonic::Streaming<super::PirContext>>,
-        ) -> Result<tonic::Response<()>, tonic::Status>;
+            request: tonic::Request<()>,
+        ) -> Result<tonic::Response<super::ServerParams>, tonic::Status>;
         async fn get_response(
             &self,
             request: tonic::Request<super::PirRequest>,
@@ -233,26 +233,19 @@ pub mod pir_grpc_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/pir_grpc.PirGrpc/SaveContext" => {
+                "/pir_grpc.PirGrpc/GetParams" => {
                     #[allow(non_camel_case_types)]
-                    struct SaveContextSvc<T: PirGrpc>(pub Arc<T>);
-                    impl<
-                        T: PirGrpc,
-                    > tonic::server::ClientStreamingService<super::PirContext>
-                    for SaveContextSvc<T> {
-                        type Response = ();
+                    struct GetParamsSvc<T: PirGrpc>(pub Arc<T>);
+                    impl<T: PirGrpc> tonic::server::UnaryService<()>
+                    for GetParamsSvc<T> {
+                        type Response = super::ServerParams;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,
                         >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<tonic::Streaming<super::PirContext>>,
-                        ) -> Self::Future {
+                        fn call(&mut self, request: tonic::Request<()>) -> Self::Future {
                             let inner = self.0.clone();
-                            let fut = async move {
-                                (*inner).save_context(request).await
-                            };
+                            let fut = async move { (*inner).get_params(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -261,14 +254,14 @@ pub mod pir_grpc_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = SaveContextSvc(inner);
+                        let method = GetParamsSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
                                 accept_compression_encodings,
                                 send_compression_encodings,
                             );
-                        let res = grpc.client_streaming(method, req).await;
+                        let res = grpc.unary(method, req).await;
                         Ok(res)
                     };
                     Box::pin(fut)
