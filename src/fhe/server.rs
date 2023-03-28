@@ -82,16 +82,12 @@ impl SunServer {
         let mut database = [[Signed::from(0); SQRT_DATABASE_SIZE]; SQRT_DATABASE_SIZE];
         let mut val = Signed::from(400);
 
-        let mut state = [[0i64; SQRT_DATABASE_SIZE]; SQRT_DATABASE_SIZE];
-
         for i in 0..SQRT_DATABASE_SIZE {
             for j in 0..SQRT_DATABASE_SIZE {
-                state[i][j] = val.into();
                 database[i][j] = val;
                 val = val + 1;
             }
         }
-        println!("{:?}", state);
 
         let args: Vec<FheProgramInput> = vec![col_query.into(), row_query.into(), database.into()];
 
