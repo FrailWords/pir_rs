@@ -27,7 +27,7 @@ path = "src/fhe/client.rs"
 name = "frodo-server"
 path = "src/frodo_pir/server.rs"
 
-[[bin]] # Bin to run the FFrodo-PIRHE gRPC client
+[[bin]] # Bin to run the Frodo-PIR gRPC client
 name = "frodo-client"
 path = "src/frodo_pir/client.rs"
 
