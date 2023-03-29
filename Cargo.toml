@@ -14,6 +14,7 @@ tonic = "0.8.3"
 frodo-pir = { git = "https://github.com/brave-experiments/frodo-pir.git" }
 rand_core = "0.6.4"
 base64 = "0.21.0"
+doublepir-rs = { git = "https://github.com/blyssprivacy/sdk.git" }
 
 [[bin]] # Bin to run the FHE gRPC server
 name = "fhe-server"
@@ -30,6 +31,14 @@ path = "src/frodo_pir/server.rs"
 [[bin]] # Bin to run the Frodo-PIR gRPC client
 name = "frodo-client"
 path = "src/frodo_pir/client.rs"
+
+[[bin]] # Bin to run the DoublePIR gRPC server
+name = "doublepir-server"
+path = "src/double_pir/server.rs"
+
+[[bin]] # Bin to run the DoublePIR gRPC client
+name = "doublepir-client"
+path = "src/double_pir/client.rs"
 
 [build-dependencies]
 tonic-build = "0.8.4"
